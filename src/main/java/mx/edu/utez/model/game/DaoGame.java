@@ -24,17 +24,22 @@ public class DaoGame {
         List<BeanGame> listGames = new ArrayList<>();
         try{
             con = ConnectionMySQL.getConnection();
-            cstm = con.prepareCall("{call sp_findGames}");
+            cstm = con.prepareCall("SELECT * FROM game;");
             rs = cstm.executeQuery();
 
             while(rs.next()){
                 BeanCategory beanCategory = new BeanCategory();
                 BeanGame beanGame = new BeanGame();
 
+                beanGame.setNameGame(rs.getString("nameGame"));
+                beanGame.setDatePremiere(rs.getString("datePremiere"));
+                beanGame.setStatus(rs.getInt("status"));
                 beanGame.setImgGame(Base64.getEncoder().encodeToString(rs.getBytes("imgGame")));
+
+                listGames.add(beanGame);
             }
         }catch(SQLException e){
-            System.out.println("ERROR");
+            CONSOLE.error("Ha ocurrido algún error: " + e.getMessage());
         }finally{
             ConnectionMySQL.closeConnections(con, cstm, rs);
         }
